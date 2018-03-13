@@ -1,4 +1,8 @@
+log/
+*_eps/
 thingol_*.aux
+thingol_*.bbl
+thingol_*.blg
 thingol_*.dvi
 thingol_*.log
 thingol_*.out

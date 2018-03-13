@@ -33,12 +33,12 @@ $(EPS_DIR)/%.eps: $(SCHEMATIC_DIR)/%.tex $(MAKEFILES) pstake.py
 	mkdir -p $(EPS_DIR)
 	$(PSTAKE) $< $@
 
-$(TRUNK)_draft.dvi: $(TRUNK)_draft.tex $(TRUNK)_main.bib $(ALL_EPS) $(MAKEFILES)
+$(TRUNK)_draft.dvi: $(TRUNK)_draft.tex ../$(TRUNK)_main.bib $(ALL_EPS) $(MAKEFILES)
 	mkdir -p $(LOG_DIR)
 	@echo "Having EPS files: $(ALL_EPS)"
 	num=1 ; while [ $$num -le $(NUM) ] ; do \
 		$(LATEX) $< 2>&1 | tee $(LOG_DIR)/$@.latex.$$num.log $(CMDLOG_DIR_REDIRECT) ; \
-		$(BIBTEX) $(basename $<) 2>&1 | tee $(LOG_DIR)/$@.bibtex.$$num.log $(CMDLOG_DIR_REDIRECT) ; \
+		$(BIBTEX) ../$(basename $<) 2>&1 | tee $(LOG_DIR)/$@.bibtex.$$num.log $(CMDLOG_DIR_REDIRECT) ; \
 	(( num = num + 1 )) ; done
 
 $(TRUNK)_draft.ps: $(TRUNK)_draft.dvi $(MAKEFILES)

@@ -6,8 +6,8 @@ Directory structure:
 
 * archive/: archival blobs
 * code/: code prototypes
-* note/: collection of notes
 * writing/: latex files
+* writing/thingol_main.bib: main reference library in bibtex format (may be generated from zotero)
 
 Zotero collection: https://www.zotero.org/groups/29/aman/items/collectionKey/TJN4J37I
 

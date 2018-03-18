@@ -1,5 +1,6 @@
 NUM ?= 3 # For LaTeX to correctly cross-reference.  To save time, use 1.
 VERBOSE ?= 0
+DOEPS ?= 1
 ifeq ($(VERBOSE),0)
 	CMDLOG_DIR_REDIRECT := > /dev/null
 	PSTAKE := ./pstake.py -q
@@ -13,6 +14,13 @@ LATEX := latex
 BIBTEX := bibtex
 DVIPS := dvips
 PS2PDF := ps2pdf
+ifeq ($(DOEPS),0)
+	DO_PSTAKE = mkdir -p $(EPS_DIR) ; touch $@
+else
+	DO_PSTAKE = mkdir -p $(EPS_DIR) ; $(PSTAKE) $< $@
+endif
+
+# tool binaries
 
 # directories
 LOG_DIR := log
@@ -23,22 +31,21 @@ TRUNK := thingol
 
 MAKEFILES := Makefile
 
-ALL_TEX = $(wildcard $(SCHEMATIC_DIR)/*.tex)
-ALL_EPS = $(patsubst $(SCHEMATIC_DIR)/%.tex,$(EPS_DIR)/%.eps,$(ALL_TEX))
+ALL_TEX := $(wildcard $(SCHEMATIC_DIR)/*.tex)
+ALL_EPS := $(patsubst $(SCHEMATIC_DIR)/%.tex,$(EPS_DIR)/%.eps,$(ALL_TEX))
 
 .PHONY: default
 default: $(TRUNK)_mesh.pdf
 
 $(EPS_DIR)/%.eps: $(SCHEMATIC_DIR)/%.tex $(MAKEFILES) pstake.py
-	mkdir -p $(EPS_DIR)
-	$(PSTAKE) $< $@
+	$(DO_PSTAKE)
 
-$(TRUNK)_mesh.dvi: $(TRUNK)_mesh.tex ../$(TRUNK)_main.bib $(ALL_EPS) $(MAKEFILES)
+$(TRUNK)_mesh.dvi: $(TRUNK)_mesh.tex $(TRUNK)_main.bib $(ALL_EPS) $(MAKEFILES)
 	mkdir -p $(LOG_DIR)
 	@echo "Having EPS files: $(ALL_EPS)"
 	num=1 ; while [ $$num -le $(NUM) ] ; do \
 		$(LATEX) $< 2>&1 | tee $(LOG_DIR)/$@.latex.$$num.log $(CMDLOG_DIR_REDIRECT) ; \
-		$(BIBTEX) ../$(basename $<) 2>&1 | tee $(LOG_DIR)/$@.bibtex.$$num.log $(CMDLOG_DIR_REDIRECT) ; \
+		$(BIBTEX) $(basename $<) 2>&1 | tee $(LOG_DIR)/$@.bibtex.$$num.log $(CMDLOG_DIR_REDIRECT) ; \
 	(( num = num + 1 )) ; done
 
 $(TRUNK)_mesh.ps: $(TRUNK)_mesh.dvi $(MAKEFILES)

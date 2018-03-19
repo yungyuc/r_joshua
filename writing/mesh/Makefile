@@ -27,6 +27,11 @@ LOG_DIR := log
 EPS_DIR := thingol_eps
 SCHEMATIC_DIR := schematic
 
+HANDOVER_DIR := handover
+NOWDATE := $(shell date +"%Y%m%d")
+NOWID := $(shell git rev-parse --short HEAD 2> /dev/null || echo "nogit")
+HANDOVER_FN = $(HANDOVER_DIR)/$(basename $<).$(NOWID).$(NOWDATE).pdf
+
 TRUNK := thingol
 
 MAKEFILES := Makefile
@@ -55,6 +60,15 @@ $(TRUNK)_mesh.ps: $(TRUNK)_mesh.dvi $(MAKEFILES)
 $(TRUNK)_mesh.pdf: $(TRUNK)_mesh.ps $(MAKEFILES)
 	mkdir -p $(LOG_DIR)
 	$(PS2PDF) $< 2>&1 | tee $(LOG_DIR)/$@.log $(CMDLOG_DIR_REDIRECT)
+
+.PHONY: ho
+ho: handover
+
+.PHONY: handover
+handover: $(TRUNK)_mesh.pdf
+	@echo "Generating today's PDF: $(HANDOVER_FN)"
+	mkdir -p $(HANDOVER_DIR)
+	cp -f $< $(HANDOVER_FN)
 
 .PHONY: clean_tex
 clean_tex:

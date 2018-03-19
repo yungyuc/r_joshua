@@ -370,28 +370,29 @@ The CESE method $c$-scheme composes of evaluations of conservation and
 gradients.  The first part assumes the gradients of the previous half time step
 as known to calculate the primary variables.  The second part calculates the
 first-order derivative.  To calculate the first-order derivative, we define
-\textit{gradient elements (GEs)}.  There are two types of GEs:
-\textit{fundamental GE (FGE)} and \textit{generalized GE (GGE)}.  A fundamental
-GE is an simplex in $\mathbb{E}^P$ space.  It always has $P+1$ vertices.  A
-generalized GE is a convex element composes of multiple non-overlapping FGEs.
+\textit{gradient elements} (GEs)\cite{chen_multi-physics_2011}.  There are two
+types of GEs: \textit{fundamental GE} (FGE) and \textit{generalized GE} (GGE).
+A FGE is an simplex in $\mathbb{E}^N$ space.  It always has $N+1$ vertices.  A
+GGE is a convex element composes of multiple non-overlapping FGEs that are
+separated by the GGE centroid.
 
 In a FGE, the gradient of a scalar function $\phi(\mathbf{x})$ is assumed to be
 constant, and denoted by
 \begin{align}
   \mathbf{g} \defeq \nabla\phi \label{e:fge:grad}
 \end{align}
-Let $\mathbf{x}^{(i)}$, $i = 0, 1, \ldots, P$ be the coordinates of the
-vertices of a FGE.  The coordinates define $P$ \textit{displacement vectors}
+Let $\mathbf{x}^{(i)}$, $i = 0, 1, \ldots, N$ be the coordinates of the
+vertices of a FGE.  The coordinates define $N$ \textit{displacement vectors}
 \begin{align}
   \mathbf{d}^{(i)} \defeq \mathbf{x}^{(i)} - \mathbf{x}^{(0)},
-  \quad i = 1, \ldots, P \label{e:fge:dis_vec}
+  \quad i = 1, \ldots, N \label{e:fge:dis_vec}
 \end{align}
 Combine all the displacement vectors to write the \textit{displacement matrix}
 \begin{align}
   D \defeq \left(\begin{array}{ccc}
-    d^{(1)}_1 & \hdots & d^{(1)}_P \\
+    d^{(1)}_1 & \hdots & d^{(1)}_N \\
     \vdots & \ddots & \vdots \\
-    d^{(P)}_1 & \hdots & d^{(P)}_P
+    d^{(N)}_1 & \hdots & d^{(N)}_N
   \end{array}\right) \label{e:fge:dis_mat}
 \end{align}
 Define
@@ -399,15 +400,12 @@ Define
   \mathbf{q} \defeq \left(\begin{array}{c}
     \phi(\mathbf{x}^{(1)}) - \phi(\mathbf{x}^{(0)}) \\
     \vdots \\
-    \phi(\mathbf{x}^{(P)}) - \phi(\mathbf{x}^{(0)})
+    \phi(\mathbf{x}^{(N)}) - \phi(\mathbf{x}^{(0)})
   \end{array}\right) \label{e:fge:dif_vec}
 \end{align}
-and call it the \textit{difference vector}.  The system equation
-\begin{align*}
-  \mathbf{q} = \mathrm{D}\mathbf{g}
-\end{align*}
-can be written.  $\mathbf{q}$ and $\mathrm{D}$ are known and $\mathbf{g}$ is
-unknown.  The unknown can be solved by
+and call it the \textit{difference vector}.  The system equation $\mathbf{q} =
+\mathrm{D}\mathbf{g}$ can be written.  $\mathbf{q}$ and $\mathrm{D}$ are known
+and $\mathbf{g}$ is unknown.  Write
 \begin{align}
   \mathbf{g} = \mathrm{D}^{-1}\mathbf{q} \label{e:fge:solve_grad}
 \end{align}
@@ -415,11 +413,39 @@ The gradient $\mathbf{g}$ defined in Eq.~(\ref{e:fge:grad}) is determined by
 Eqs~(\ref{e:fge:dis_vec}), (\ref{e:fge:dis_mat}), (\ref{e:fge:dif_vec}), and
 (\ref{e:fge:solve_grad}).
 
+The gradient of a GGE is approximated by the average gradient at its centroid
+\begin{align}
+  \mathbf{g}^c \defeq \frac{1}{M} \sum_{i=0}^{M-1} \mathbf{g}^{(i)}
+  \label{e:gge:grad:centroid}
+\end{align}
+where $\mathbf{g}^{(0)}, \mathbf{g}^{(1)}, \ldots, \mathbf{g}^{(M-1)}$ are the
+gradient of its FGEs.  If the GGE is a simplex, i.e., $M = N+1$, it can be
+shown that $\mathbf{g}^c$ is equal to the gradient calculated by treating the
+GGE as a FGE and applying Eq.~\ref{e:fge:solve_grad}.
+
+Equation \ref{e:gge:grad:centroid} leads to more interesting weighting
+functions for approximating GGE gradient for treating discontinuity.  The W-1
+scheme uses
+\begin{align}
+  \mathbf{g}^{c} \approx \dfrac{
+    \sum\limits_{i=0}^{M-1}\left(\rho^{(i)}\right)^{\alpha}\mathbf{g}^{(i)}
+  }{
+    \sum\limits_{i=0}^{M-1}\left(\rho^{(i)}\right)^{\alpha}
+  }
+\end{align}
+where the weighting coefficients
+\begin{align}
+  \rho^{(i)} \defeq \prod_{k=0; k\neq i}^{M-1}
+                    \left\vert\mathbf{g}^{(k)}\right\vert,
+  \quad i = 0, \ldots, M-1
+\end{align}
+and $\alpha$ an adjustable parameter, usually a natural number.
+
 \clearpage
 
 \addcontentsline{toc}{chapter}{Bibliography}
-\bibliographystyle{myunsrtnat} % no sort (order in appearance)
-%\bibliographystyle{plain} % sort by author
+%\bibliographystyle{myunsrtnat} % no sort (order in appearance)
+\bibliographystyle{myplainnat} % sort by author
 \bibliography{thingol_main}
 
 \end{document}

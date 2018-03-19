@@ -338,11 +338,13 @@ Node definitions of three-dimensional mesh elements in SOLVCON:
 \section{The CESE Method Dual Mesh}
 \label{s:cese_dual}
 
-Figure~\ref{f:mesh_2d_tri} exhibits 6 triangular mesh elements for the CESE
-method.  The CESE method evaluates the solutions at geometrical centers of
-conservation elements (CEs) and constructs the solution elements (SEs).  The
-element centers and the mesh vertices consist of the conservation elements.
-See Fig.~\ref{f:mesh_2d_ce}.
+Figure~\ref{f:mesh_2d_tri} exhibits 6 triangles as an example of mesh elements
+for the CESE method.  The CESE method evaluates the solutions at the centroids
+of conservation elements (CEs).  The centroids are the solution points and are
+used to construct the solution elements (SEs).  The element centers and the
+mesh vertices consist of the conservation elements.  The conservation element
+is the space-time dual mesh defined on the unstructured mesh for the CESE
+method.  See Figure~\ref{f:mesh_2d_ce}.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
@@ -363,6 +365,58 @@ See Fig.~\ref{f:mesh_2d_ce}.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \clearpage
+
+The CESE method $c$-scheme composes of evaluations of conservation and
+gradients.  The first part assumes the gradients of the previous half time step
+as known to calculate the primary variables.  The second part calculates the
+first-order derivative.  To calculate the first-order derivative, we define
+\textit{gradient elements (GEs)}.  There are two types of GEs:
+\textit{fundamental GE (FGE)} and \textit{generalized GE (GGE)}.  A fundamental
+GE is an simplex in $\mathbb{E}^P$ space.  It always has $P+1$ vertices.  A
+generalized GE is a convex element composes of multiple non-overlapping FGEs.
+
+In a FGE, the gradient of a scalar function $\phi(\mathbf{x})$ is assumed to be
+constant, and denoted by
+\begin{align}
+  \mathbf{g} \defeq \nabla\phi \label{e:fge:grad}
+\end{align}
+Let $\mathbf{x}^{(i)}$, $i = 0, 1, \ldots, P$ be the coordinates of the
+vertices of a FGE.  The coordinates define $P$ \textit{displacement vectors}
+\begin{align}
+  \mathbf{d}^{(i)} \defeq \mathbf{x}^{(i)} - \mathbf{x}^{(0)},
+  \quad i = 1, \ldots, P \label{e:fge:dis_vec}
+\end{align}
+Combine all the displacement vectors to write the \textit{displacement matrix}
+\begin{align}
+  D \defeq \left(\begin{array}{ccc}
+    d^{(1)}_1 & \hdots & d^{(1)}_P \\
+    \vdots & \ddots & \vdots \\
+    d^{(P)}_1 & \hdots & d^{(P)}_P
+  \end{array}\right) \label{e:fge:dis_mat}
+\end{align}
+Define
+\begin{align}
+  \mathbf{q} \defeq \left(\begin{array}{c}
+    \phi(\mathbf{x}^{(1)}) - \phi(\mathbf{x}^{(0)}) \\
+    \vdots \\
+    \phi(\mathbf{x}^{(P)}) - \phi(\mathbf{x}^{(0)})
+  \end{array}\right) \label{e:fge:dif_vec}
+\end{align}
+and call it the \textit{difference vector}.  The system equation
+\begin{align*}
+  \mathbf{q} = \mathrm{D}\mathbf{g}
+\end{align*}
+can be written.  $\mathbf{q}$ and $\mathrm{D}$ are known and $\mathbf{g}$ is
+unknown.  The unknown can be solved by
+\begin{align}
+  \mathbf{g} = \mathrm{D}^{-1}\mathbf{q} \label{e:fge:solve_grad}
+\end{align}
+The gradient $\mathbf{g}$ defined in Eq.~(\ref{e:fge:grad}) is determined by
+Eqs~(\ref{e:fge:dis_vec}), (\ref{e:fge:dis_mat}), (\ref{e:fge:dif_vec}), and
+(\ref{e:fge:solve_grad}).
+
+\clearpage
+
 \addcontentsline{toc}{chapter}{Bibliography}
 \bibliographystyle{myunsrtnat} % no sort (order in appearance)
 %\bibliographystyle{plain} % sort by author

@@ -12,8 +12,7 @@ schematic_diagram	The schematic diagram of two dimension cavity flow
 
 
 Design Decisions & Project Issues:
-     We introduced a two-dimensional Pressure-Implicit with Splitting Operators (PISO) scheme to simulate the laminar incompressible flow in a unit  
-square cavity whose top wall moves with a uniform velocity serves as a model problem to test and evaluate the unified wall-boundary condition
+     We introduced a two-dimensional Pressure-Implicit with Splitting Operators (PISO) scheme to simulate the laminar incompressible flow in a unit square cavity whose top wall moves with a uniform velocity serves as a model problem to test and evaluate the unified wall-boundary condition
 
 
 

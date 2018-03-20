@@ -1,16 +1,16 @@
-!==========================2D CAVITY FLOW=========================================  
+!==========================2D CAVITY FLOW=========================================
 ! PISO SCHEME  FOR 2D (IN)COMPRESSIBLE FLOW
 ! Y. JIANG, CP cHEN, AND HM SHANG: A NEW PRESSURE-VELOCITY COUPLING PROCEDURE FOR
 !       INVICID AND VISCOUS FLOWS AT ALL SPEED
-!         
+!
 ! U(1): PRE, U(2): XVEL; U(3): YVEL, U(4): TEMP
 ! STAGGERED GRID
-! PRE,U,V,LOCATED DIFFERENT POSITION 
+! PRE,U,V,LOCATED DIFFERENT POSITION
 !============OKOKOK============100.3.12================OKOKOK=================
 !!!!!!!! PLOT:  UY, VX
 !=============================================================================
 MODULE PISO
-parameter(MI=512,MJ=512)  
+parameter(MI=512,MJ=512)
 REAL XL,DT,DTO,DX,DXO,DY,DYO,DZ,DZO,CFL
 INTEGER NX,NXP,NXPP,NXM,NY,NYP,NYPP,NYM,NXH
 REAL GAM,GAMO,GAMM,GAMMO
@@ -51,52 +51,52 @@ END MODULE
 	  IOUT=10
 	  IREAD=0
       DIAMETER=10. ; RADIUS=0.5*DIAMETER
-      DENI=1.; UIN=1. ; VIN=0.; PREI=1.0 !(RE=UIN/REO)      
+      DENI=1.; UIN=1. ; VIN=0.; PREI=1.0 !(RE=UIN/REO)
 
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!      
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       RE=100. !(RE=100, 400, 1000)
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!            
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       REO=UIN*XL/RE
-      PR=0.72; PRO=1./PR 	  
+      PR=0.72; PRO=1./PR
 	  VCOX=REO*DXO*DXO; VCOY=REO*DYO*DYO
 	  R1=DX/UIN
 	  CDISP=0. ; CDISPP=1.1
       DT=CFL*DX/UIN
-	  DTO=1/DT 
+	  DTO=1/DT
 
 	  ESLON=0.0000001; AV=0. ! AV: ARTIFICIAL VISCIUS IN FIRST VELOCITY PREDICATOR
 
 	  DO I=0,MIP; DO J=0,MJP
 	  X(I,J)=(I-0.5)*DX
 	  Y(I,J)=(J-0.5)*DY
-	  ENDDO; ENDDO   
+	  ENDDO; ENDDO
 
 
 
 !========================================================================================
 
-	  DO I=-2,MIP+1; DO J=-2,MJP+1 
+	  DO I=-2,MIP+1; DO J=-2,MJP+1
 	  U(1,I,J)=PREI
 	  U(2,I,J)=0.
 	  U(3,I,J)=0.
 	  U(4,I,J)=1.
-	  END DO ; END DO 
-	  
-	  
+	  END DO ; END DO
+
+
 	  IF (IREAD.EQ.1) THEN
 	  open (7,FILE='SOL0.DAT',STATUS='unknown')
 	   DO I=-2,MIP+1 ; DO J=-2,MJP+1
 			DO L=1,4
 	        READ(7,*)U(L,I,J)
 	        ENDDO
-	   ENDDO; ENDDO 
+	   ENDDO; ENDDO
 	   CLOSE(7)
 	  END IF
 
 	  CALL BOUNDARY(U)
-	  
 
-	  ITER=0; TAT=0.	
+
+	  ITER=0; TAT=0.
 
 1000  ITER=ITER+1; TAT=TAT+DT
 
@@ -106,11 +106,11 @@ END MODULE
 	  TEMPU=ABS(U(2,I,J)); TEMPV=ABS(U(3,I,J))
 	  EMAX=MAX(EMAX, TEMPU+TEMPC, TEMPV+TEMPC)
 	  ENDDO; ENDDO
-	  DT=CFL*DX/EMAX 
-	  DTO=1./DT 
+	  DT=CFL*DX/EMAX
+	  DTO=1./DT
 
-      
-	  
+
+
 	  DO L=1,4
 	  DO I=-2,MIP+1; DO J=-2,MJP+1
 	  UM(L,I,J)=U(L,I,J)
@@ -138,7 +138,7 @@ END MODULE
 	  BM(I,J)=-DYO*DUMP-VCOY
 	  END DO ; END DO
 !CUT
-	  DO J=1,MJ;DO I=1,MIM 
+	  DO J=1,MJ;DO I=1,MIM
 	  D0U(I,J)=DTO+DC(I,J) ; D(I,J)=D0U(I,J)
 	  A1(I,J)=AM(I,J); A2(I,J)=AP(I,J)
 	  B1(I,J)=BM(I,J); B2(I,J)=BP(I,J)
@@ -154,9 +154,9 @@ END MODULE
 	  D(I,1)=D(I,1)-B1(I,1); B1(I,1)=0.
 !	  D(I,MJ)=D(I,MJ)-B2(I,MJ); B2(I,MJ)=0.
 	  ENDDO
-	  
+
       UT=0.
-      
+
       DO I=0,MIP; DO J=0,MJP
 	  UT(I,J)=U(2,I,J)
 	  ENDDO; ENDDO
@@ -193,7 +193,7 @@ END MODULE
 	  B1(I,J)=BM(I,J); B2(I,J)=BP(I,J)
 	  C(I,J)=-DYO*(U(1,I,J+1)-U(1,I,J))+DTO*U(3,I,J)
 	  ENDDO; ENDDO
-	  
+
 	  DO J=1,MJM
 	  D(1,J)=D(1,J)-A1(1,J); A1(1,J)=0.
 	  D(MI,J)=D(MI,J)-A2(MI,J); A2(MI,J)=0.
@@ -203,7 +203,7 @@ END MODULE
 !	  D(I,1)=D(I,1)-B1(I,1); B1(I,1)=0.
 !	  D(I,MJ)=D(I,MJ)-B2(I,MJ); B1(I,MJ)=0.
 !	  ENDDO
-	  
+
       UT=0.
       DO I=0,MIP; DO J=0,MJP
 	  UT(I,J)=U(3,I,J)
@@ -214,35 +214,35 @@ END MODULE
 	  DO I=1,MI; DO J=1,MJ
 	  US(3,I,J)=UT(I,J)
 	  ENDDO; ENDDO
-	  
- CALL BOUNDARY(US)        
- 
-           
 
-	  
+ CALL BOUNDARY(US)
+
+
+
+
 
 ! CORRECTOR: PRESSURE, VELOCITY
-	  
+
       DXO2=DXO*DXO; DYO2=DYO*DYO
-      
+
       DO I=1,MI; DO J=1,MJ
       IM=I-1 ; JM=J-1
-      
+
       D(I,J)=-2.*DXO2
 	  A2(I,J)=DXO2
 	  A1(I,J)=DXO2
-!	  
+!
 	  D(I,J)=D(I,J)-2.*DYO2
 	  B2(I,J)=DYO2
 	  B1(I,J)=DYO2
 !
       D(I,J)=D(I,J)*CDISPP
-      
-      TEMP=DXO*(US(2,I,J)-US(2,IM,J)) 
+
+      TEMP=DXO*(US(2,I,J)-US(2,IM,J))
 	  TEMP=TEMP+DYO*(US(3,I,J)-US(3,I,JM))
-	  C(I,J)=TEMP	  
+	  C(I,J)=TEMP
 	  ENDDO; ENDDO
-	  
+
 !MATRIX SOLVER B.C.
 	  DO J=1,MJ
 	  D(1,J)=D(1,J)+A1(1,J); A1(1,J)=0.
@@ -251,7 +251,7 @@ END MODULE
 	  DO I=1,MI
 	  D(I,1)=D(I,1)+B1(I,1); B1(I,1)=0.
 	  D(I,MJ)=D(I,MJ)+B2(I,MJ); B2(I,MJ)=0.
-	  ENDDO	  
+	  ENDDO
 
 	  DO I=0,MIP; DO J=0,MJP
 	  UT(I,J)=0.
@@ -263,7 +263,7 @@ END MODULE
 	  UT(0,J)=UT(1,J)
 	  UT(MIP,J)=UT(MI,J)
 	  ENDDO
-	  
+
 	  DO I=1,MI
 	  UT(I,0)=UT(I,1)
 	  UT(I,MJP)=UT(I,MJ)
@@ -276,8 +276,8 @@ END MODULE
 	  U(3,I,J)=US(3,I,J)-DYO*(UT(I,JP)-UT(I,J))
 	  ENDDO; ENDDO
 
-	 CALL BOUNDARY(U)  
-	
+	 CALL BOUNDARY(U)
+
 !================LW  LENGTH=================================
 
 	  ERRU=0.; ERRD=0.
@@ -293,60 +293,60 @@ END MODULE
 
 	  COMP=0.; COMPMAX=0.
 	  DO I=2,MI-1; DO J=2,MJ-1
-	  
+
 	  COMPIJ=0.5*DXO*(U(2,I,J)-U(2,I-1,J))+0.5*DYO*(U(3,I,J)-U(3,I,J-1))
 	  COMP=COMP+COMPIJ*COMPIJ
 	  COMPMAX=AMAX1(COMPMAX,COMPIJ)
 	  ENDDO; ENDDO
 	  ERRC=SQRT(COMP/((MI-2)*(MJ-2)))
- 
-	  
-WRITE(*,*)ITER,DT,ERRD,ERRU,ERRC  
+
+
+WRITE(*,*)ITER,DT,ERRD,ERRU,ERRC
 
 
 
-!=================================================================================       
+!=================================================================================
 IF(ITER/1000*1000==ITER) THEN
-    
+
     open (7,FILE='DEN.DAT',STATUS='unknown')
-       write(7,*) 'VARIABLES = X,Y,PRE,U,V,WN,PSI'                                
+       write(7,*) 'VARIABLES = X,Y,PRE,U,V,WN,PSI'
        write(7,*) 'ZONE T="ZONE1",I=',MIP,'J=',MJP
-	   DO J=0,MJ ; DO I=0,MI	   
+	   DO J=0,MJ ; DO I=0,MI
 	   UC(2,I,J)=0.5*(U(2,I,J)+U(2,I+1,J))
-	   UC(3,I,J)=0.5*(U(3,I,J)+U(3,I,J+1))	 
+	   UC(3,I,J)=0.5*(U(3,I,J)+U(3,I,J+1))
 	   WN(I,J)=0.5*(UC(3,I+1,J)-UC(3,I-1,J)-UC(2,I,J+1)+UC(2,I,J-1))
 	   TEMP1=TEMP1+UC(3,I,0)
 	   TEMP2=TEMP2+UC(2,I,J)
 	   PSI(I,J)=TEMP2-TEMP1
 	   WRITE(7,*)I*DX,J*DY,U(1,I,J),UC(2,I,J),UC(3,I,J),WN(I,J),PSI(I,J)
 	   ENDDO; ENDDO
-	   CLOSE(7)	   
-    
+	   CLOSE(7)
 
 
-	   open (7,FILE='UY.DAT',STATUS='unknown')       
+
+	   open (7,FILE='UY.DAT',STATUS='unknown')
 	   DO J=0,MJ
-	   I=0.5*MI	  
- 
-	   WRITE(7,*)UC(2,I,J)/UIN,Y(I,J)       
+	   I=0.5*MI
+
+	   WRITE(7,*)UC(2,I,J)/UIN,Y(I,J)
 	   ENDDO
-	   CLOSE(7) 	 
-	   
-	   open (7,FILE='VX.DAT',STATUS='unknown')       
+	   CLOSE(7)
+
+	   open (7,FILE='VX.DAT',STATUS='unknown')
 	   DO I=0,MI
-	   J=0.5*MJ	   
-	   WRITE(7,*)X(I,J),UC(3,I,J)/UIN	     
+	   J=0.5*MJ
+	   WRITE(7,*)X(I,J),UC(3,I,J)/UIN
 	   ENDDO
-	   CLOSE(7) 
-END IF	   	
+	   CLOSE(7)
+END IF
 !==============SURFACE PRESSURE
-	
+
 !	   IF(ERRU>0.000001) GOTO 1000
-       IF(ITER<ITAT) GOTO 1000 
-       
-   
-	  	  	  
-	  
+       IF(ITER<ITAT) GOTO 1000
+
+
+
+
 
 
 	   open (7,FILE='SOL.DAT',STATUS='unknown')
@@ -356,55 +356,55 @@ END IF
 	        ENDDO
 	   ENDDO; ENDDO
 	   CLOSE(7)
-       
+
 
 100	  STOP
-	  END 
+	  END
 
 !-----------------------------------------------------
       SUBROUTINE BOUNDARY(W)
 	  USE PISO
-	  REAL W(4,-2:MI+2,-2:MJ+2) 
+	  REAL W(4,-2:MI+2,-2:MJ+2)
 
 	  MIP=MI+1; MIPP=MI+2; MJP=MJ+1; MJPP=MJ+2
-	  
- 
+
+
       DO J=1,MJ
 	  W(1,0,J)=W(1,1,J)
-	  W(2,0,J)=0. 
+	  W(2,0,J)=0.
 	  W(3,0,J)=-W(3,1,J)
 
-	  ENDDO	
+	  ENDDO
 !I=MIP
 	  DO J=1,MJ
 	  W(1,MIP,J)=W(1,MI,J)
-	  W(2,MI,J)=0. 
-	  W(3,MIP,J)=-W(3,MI,J)	  
+	  W(2,MI,J)=0.
+	  W(3,MIP,J)=-W(3,MI,J)
 	  ENDDO
 !J=MJP
       DO I=0,MIP
 	  W(1,I,MJP)=W(1,I,MJ)
-	  W(2,I,MJP)=UIN  
-	  W(3,I,MJ)=VIN	  
-	  ENDDO	  
+	  W(2,I,MJP)=UIN
+	  W(3,I,MJ)=VIN
+	  ENDDO
 !J=0
 	  DO I=0,MIP
 	  W(1,I,0)=W(1,I,1)
-	  W(2,I,0)=-W(2,I,1) 
-	  W(3,I,0)=0.	  
+	  W(2,I,0)=-W(2,I,1)
+	  W(3,I,0)=0.
 	  ENDDO
-!I=0	      
+!I=0
 	  RETURN
-	  END 
+	  END
 !-----------------------------------------------------
       SUBROUTINE SYUU(DCT,APT,AMT,BPT,BMT,CC,UT)
 	  USE PISO
 	  REAL DCT(-2:MI+2,-2:MJ+2),APT(-2:MI+2,-2:MJ+2),AMT(-2:MI+2,-2:MJ+2)
 	  REAL BPT(-2:MI+2,-2:MJ+2),BMT(-2:MI+2,-2:MJ+2)
 	  REAL CC(-2:MI+2,-2:MJ+2),UT(-2:MI+2,-2:MJ+2),UTO(-2:MI+2,-2:MJ+2)
-      
+
       MIM=MI-1; MJM=MJ-1
-      
+
 	  ITT=0
 1000  ITT=ITT+1
 
@@ -416,12 +416,12 @@ END IF
 	  IP=I+1; IM=I-1; JP=J+1; JM=J-1
 	  TEMP=CC(I,J)-APT(I,J)*UT(IP,J)-AMT(I,J)*UT(IM,J)&
 	               &-BPT(I,J)*UT(I,JP)-BMT(I,J)*UT(I,JM)
-				   
+
       UT(I,J)=TEMP/DCT(I,J)
 	  ENDDO; ENDDO
-      
-      
-      
+
+
+
 	  ERR=0.
 	  DO J=1,MJ; DO I=1,MIM
 	  UTEMP=UT(I,J)-UTO(I,J)
@@ -433,15 +433,15 @@ END IF
 	  IF(ERR .GT. 0.000001 .OR. ITT .LT. 10) GOTO 1000
 
       RETURN
-	  END 
-	  
-!=================================================================	  
+	  END
+
+!=================================================================
 SUBROUTINE SYUV(DCT,APT,AMT,BPT,BMT,CC,UT)
 	  USE PISO
 	  REAL DCT(-2:MI+2,-2:MJ+2),APT(-2:MI+2,-2:MJ+2),AMT(-2:MI+2,-2:MJ+2)
 	  REAL BPT(-2:MI+2,-2:MJ+2),BMT(-2:MI+2,-2:MJ+2)
 	  REAL CC(-2:MI+2,-2:MJ+2),UT(-2:MI+2,-2:MJ+2),UTO(-2:MI+2,-2:MJ+2)
-	  
+
       MIM=MI-1; MJM=MJ-1
 
 	  ITT=0
@@ -455,7 +455,7 @@ SUBROUTINE SYUV(DCT,APT,AMT,BPT,BMT,CC,UT)
 	  IP=I+1; IM=I-1; JP=J+1; JM=J-1
 	  TEMP=CC(I,J)-APT(I,J)*UT(IP,J)-AMT(I,J)*UT(IM,J)&
 	               &-BPT(I,J)*UT(I,JP)-BMT(I,J)*UT(I,JM)
-				   
+
       UT(I,J)=TEMP/DCT(I,J)
 	  ENDDO; ENDDO
 
@@ -470,10 +470,10 @@ SUBROUTINE SYUV(DCT,APT,AMT,BPT,BMT,CC,UT)
 	  IF(ERR .GT. 0.000001 .OR. ITT .LT. 10) GOTO 1000
 
       RETURN
-	  END 	  
+	  END
 !------------------------------------------------------------
       SUBROUTINE SYUP(DCT,APT,AMT,BPT,BMT,CC,UT)
-	  USE PISO 
+	  USE PISO
 	  REAL DCT(-2:MI+2,-2:MJ+2),APT(-2:MI+2,-2:MJ+2),AMT(-2:MI+2,-2:MJ+2)
 	  REAL BPT(-2:MI+2,-2:MJ+2),BMT(-2:MI+2,-2:MJ+2)
 	  REAL CC(-2:MI+2,-2:MJ+2),UT(-2:MI+2,-2:MJ+2),UTO(-2:MI+2,-2:MJ+2)
@@ -488,13 +488,13 @@ SUBROUTINE SYUV(DCT,APT,AMT,BPT,BMT,CC,UT)
       DO I=1,MI; DO J=1,MJ
 	  IP=I+1; IM=I-1; JP=J+1; JM=J-1
 	  TEMP=CC(I,J)-APT(I,J)*UT(IP,J)-AMT(I,J)*UT(IM,J)&
-	               &-BPT(I,J)*UT(I,JP)-BMT(I,J)*UT(I,JM)				   
+	               &-BPT(I,J)*UT(I,JP)-BMT(I,J)*UT(I,JM)
       UT(I,J)=TEMP/DCT(I,J)
 	  ENDDO; ENDDO
 
 
 	  ERR=0.
-	  DO J=1,MJ ; DO I=1,MI 
+	  DO J=1,MJ ; DO I=1,MI
 	  UTEMP=UT(I,J)-UTO(I,J)
 	  ERR=ERR+UTEMP*UTEMP
 	  ENDDO; ENDDO

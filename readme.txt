@@ -18,4 +18,4 @@ Design Decisions & Project Issues:
 test and evaluate the unified wall-boundary condition.
 
 Analysis Results
-     The results "u-y_re100" & "x-v_re100" compare well with the numerical results obtained by Ghia et al(1982).
+     The results "u-y_re100" & "x-v_re100" compare well with the numerical results obtained by Ghia et al. (1982).

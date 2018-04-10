@@ -1,0 +1,12 @@
+# Default Target
+.PHONY: all
+all: CAVITY_2D_STAGGERED
+
+# CAVITY_2D_STAGGERED
+CAVITY_2D_STAGGERED: clean
+	gfortran -o CAVITY_2D_STAGGERED CAVITY_2D_STAGGERED.f90
+
+# Clean
+.PHONY: clean
+clean:
+	rm -f CAVITY_2D_STAGGERED

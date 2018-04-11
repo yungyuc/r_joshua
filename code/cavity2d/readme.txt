@@ -5,7 +5,7 @@ How To Run "CAVITY_2D_STAGGERED.f90":
 
 Files Includes With This "cavity2d":
 
-CAVITY_2D_STAGGERED.F90 Fortran source code
+CAVITY_2D_STAGGERED.f90 Fortran source code
 u-y_re100		Comparison the Ghia et al.(1982) and PISO Code of u-velocity along the vertical centreline through geometric center for Re=100
 x-v_re100		Comparison the Ghia et al.(1982) and PISO Code of v-velocity along the horizontal centreline through geometric center for Re=100
 schematic_diagram	The schematic diagram of two dimension cavity flow

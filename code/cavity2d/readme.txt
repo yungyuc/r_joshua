@@ -1,5 +1,5 @@
 
-How To Run "CAVITY_2D_STAGGERED.F90":
+How To Run "CAVITY_2D_STAGGERED.f90":
      Run "PISO Code" using visual studio 2010 & intel fortran compiler.
 
 

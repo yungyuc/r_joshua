@@ -1,3 +1,5 @@
 *.mod
 *.DAT
+*.log
+*.tar.gz
 CAVITY_2D_STAGGERED

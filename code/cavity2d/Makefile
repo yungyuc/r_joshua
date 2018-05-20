@@ -8,8 +8,8 @@ CAVITY_2D_STAGGERED: CAVITY_2D_STAGGERED.F90 Makefile
 
 .PHONY: clean
 clean:
-	rm -rf $(BIN)
+	rm -rf $(BIN) *.mod
 
 .PHONY: clean-run
 clean-run:
-	rm -rf $(BIN) *.DAT
+	rm -rf $(BIN) *.DAT *.log

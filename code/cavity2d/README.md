@@ -41,5 +41,5 @@ condition.
 
 ## Results
 
-The results shown in `u-y_re100.png` and `x-v_re100.png` well agree with
-the those by Ghia et al. (1982)
+The results shown in `u-y_re100.png` and `x-v_re100.png` well agree with those
+by Ghia et al. (1982)
